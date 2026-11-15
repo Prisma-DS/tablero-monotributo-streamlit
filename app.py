@@ -11,6 +11,9 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+import os
+DEMO = os.getenv("DEMO_MODE", "1") == "1"   # por defecto: demo
+
 from monotributo.calculo import (
     categoria_para,
     facturacion_mensual,
@@ -85,15 +88,31 @@ escalas = escalas_vigentes()
 categorias = list(escalas["categoria"])
 
 st.title("📊 Control de Monotributo")
-st.caption(
-    "Subí los CSV de «Mis Comprobantes» (comprobantes emitidos) de tus clientes. "
-    "Los archivos se procesan en memoria y no se guardan."
-)
+if DEMO:
+    st.caption(
+        "Versión de demostración con datos ficticios. "
+        "En esta versión no se pueden cargar archivos."
+    )
+else:
+    st.caption(
+        "Subí los CSV de «Mis Comprobantes» (comprobantes emitidos) de tus clientes. "
+        "Los archivos se procesan en memoria y no se guardan."
+    )
+
+#with st.sidebar:
+#    st.header("Datos")
+#    subidos = st.file_uploader("CSV de comprobantes emitidos", type=["csv"], accept_multiple_files=True)
+#    usar_ejemplo = st.checkbox("Usar datos de ejemplo (ficticios)", value=False)
 
 with st.sidebar:
     st.header("Datos")
-    subidos = st.file_uploader("CSV de comprobantes emitidos", type=["csv"], accept_multiple_files=True)
-    usar_ejemplo = st.checkbox("Usar datos de ejemplo (ficticios)", value=False)
+    if DEMO:
+        subidos = None
+        usar_ejemplo = True
+        st.info("Datos de ejemplo (ficticios).")
+    else:
+        subidos = st.file_uploader("CSV de comprobantes emitidos", type=["csv"], accept_multiple_files=True)
+        usar_ejemplo = st.checkbox("Usar datos de ejemplo (ficticios)", value=False)
 
 if subidos:
     archivos = [(f.name, f.getvalue()) for f in subidos]
