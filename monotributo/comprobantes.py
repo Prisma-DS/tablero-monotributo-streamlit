@@ -109,7 +109,9 @@ def leer_comprobantes(contenido: bytes) -> tuple[pd.DataFrame, list[str]]:
     df["codigo"] = df["codigo"].astype(int)
     es_recibo = df["codigo"].isin(RECIBOS)
     if es_recibo.any():
-        avisos.append(f"Se excluyeron {int(es_recibo.sum())} recibos (no son ingresos).")
+        n= int(es_recibo.sum())
+        avisos.append(f"Se {'excluyó' if n == 1 else 'excluyeron'} {n} {'recibo' if n == 1 else 'recibos'} (no son ingresos).")
+        #avisos.append(f"Se excluyeron {int(es_recibo.sum())} recibos (no son ingresos).")
     df = df[~es_recibo].copy()
 
     signo = pd.Series(1.0, index=df.index).where(~df["codigo"].isin(NOTAS_DE_CREDITO), -1.0)

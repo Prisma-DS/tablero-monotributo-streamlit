@@ -25,12 +25,14 @@ from monotributo.comprobantes import leer_comprobantes
 from monotributo.escalas import cargar_escalas
 
 EJEMPLOS = Path(__file__).parent / "data" / "ejemplos"
+ASSETS = Path(__file__).parent / "assets"
+
 ICONOS = {"En rango": "🟢 En rango", "Atención": "🟡 Atención", "Alerta": "🟠 Alerta", "Superado": "🔴 Superado"}
 
 HORIZONTE_MESES = 6
 
-st.set_page_config(page_title="Control de Monotributo", page_icon="📊", layout="wide")
-
+st.set_page_config(page_title="Control de Monotributo", page_icon=str(ASSETS / "icono.png"), layout="wide")
+st.logo(str(ASSETS / "logo.png"), icon_image=str(ASSETS / "icono.png"), link="https://prismads.com.ar", size="large")
 
 def ars(valor: float) -> str:
     texto = f"{abs(valor):,.0f}".replace(",", ".")
@@ -110,9 +112,12 @@ with st.sidebar:
         subidos = None
         usar_ejemplo = True
         st.info("Datos de ejemplo (ficticios).")
+        st.markdown("¿Querés usarla con tus clientes? [Escribinos](mailto:contacto@prismads.com.ar)")
     else:
         subidos = st.file_uploader("CSV de comprobantes emitidos", type=["csv"], accept_multiple_files=True)
         usar_ejemplo = st.checkbox("Usar datos de ejemplo (ficticios)", value=False)
+
+           
 
 if subidos:
     archivos = [(f.name, f.getvalue()) for f in subidos]
@@ -136,7 +141,7 @@ if not analizados:
 
 con_avisos = [a for a in analizados if a["avisos"]]
 if con_avisos:
-    with st.expander("Avisos de lectura"):
+    with st.expander("Detalle de la lectura de datos"):
         for a in con_avisos:
             st.write(f"**{a['nombre']}**: " + " ".join(a["avisos"]))
 
@@ -354,3 +359,4 @@ st.caption(
     "actualizalas cada semestre con la tabla oficial de ARCA. Esta herramienta evalúa solo los ingresos brutos: "
     "la categoría también depende de superficie, energía eléctrica consumida y alquileres."
 )
+st.caption("Desarrollado por [Prisma DS](https://prismads.com.ar) · contacto@prismads.com.ar")
